@@ -15,53 +15,48 @@ public class MainFrame extends JFrame {
         // Panel utama
         JPanel panel = new JPanel();
         panel.setBackground(new Color(245, 245, 245));
-        panel.setLayout(new GridBagLayout());
+        panel.setLayout(null); // Menggunakan Absolute Layout
         add(panel);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
 
         // Judul
         JLabel titleLabel = new JLabel("Laundry Apps");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
         titleLabel.setForeground(Color.MAGENTA);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 3;
-        panel.add(titleLabel, gbc);
+        titleLabel.setBounds(200, 20, 200, 35); // x, y, width, height
+        panel.add(titleLabel);
 
-        // Reset gridwidth untuk tombol
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.BOTH;
 
         // Baris pertama: Pesanan, Layanan, Pelanggan
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        panel.add(new JButton("PESANAN"), gbc);
+        JButton btnPesanan = new JButton("PESANAN");
+        btnPesanan.setBounds(50, 80, 150, 40);
+        panel.add(btnPesanan);
 
-        gbc.gridx = 1;
-        panel.add(new JButton("LAYANAN"), gbc);
+        JButton btnLayanan = new JButton("LAYANAN");
+        btnLayanan.setBounds(220, 80, 150, 40);
+        panel.add(btnLayanan);
 
-        gbc.gridx = 2;
-        panel.add(new JButton("PELANGGAN"), gbc);
+        JButton btnPelanggan = new JButton("PELANGGAN");
+        btnPelanggan.setBounds(390, 80, 150, 40);
+        panel.add(btnPelanggan);
+
 
         // Baris kedua: Pengguna, Laporan, Profile
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        panel.add(new JButton("PENGGUNA"), gbc);
+        JButton btnPengguna = new JButton("PENGGUNA");
+        btnPengguna.setBounds(50, 140, 150, 40);
+        panel.add(btnPengguna);
 
-        gbc.gridx = 1;
-        panel.add(new JButton("LAPORAN"), gbc);
+        JButton btnLaporan = new JButton("LAPORAN");
+        btnLaporan.setBounds(220, 140, 150, 40);
+        panel.add(btnLaporan);
 
-        gbc.gridx = 2;
-        panel.add(new JButton("PROFILE"), gbc);
+        JButton btnProfile = new JButton("PROFILE");
+        btnProfile.setBounds(390, 140, 150, 40);
+        panel.add(btnProfile);
 
         // Baris ketiga: tombol keluar
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
         JButton btnKeluar = new JButton("KELUAR");
-        panel.add(btnKeluar, gbc);
+        btnKeluar.setBounds(50, 220, 490, 40); // Span lebar
+        panel.add(btnKeluar);
 
         // Action tombol keluar
         btnKeluar.addActionListener(new ActionListener() {

@@ -1,8 +1,8 @@
 package ui;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
@@ -12,7 +12,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Panel utama
+        // Panel utam
         JPanel panel = new JPanel();
         panel.setBackground(new Color(245, 245, 245));
         panel.setLayout(new GridBagLayout());

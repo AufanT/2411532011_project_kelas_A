@@ -12,7 +12,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Panel utam
+        // Panel utama
         JPanel panel = new JPanel();
         panel.setBackground(new Color(245, 245, 245));
         panel.setLayout(new GridBagLayout());

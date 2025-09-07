@@ -1,4 +1,4 @@
-package model;
+package Pertemuan1.model;
 
 public class User {
     String id, nama, username, password;

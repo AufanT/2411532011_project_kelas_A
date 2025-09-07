@@ -1,4 +1,4 @@
-package ui;
+package Pertemuan1.ui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -22,7 +22,7 @@ public class MainFrame extends JFrame {
         JLabel titleLabel = new JLabel("Laundry Apps");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
         titleLabel.setForeground(Color.MAGENTA);
-        titleLabel.setBounds(200, 20, 200, 35); // x, y, width, height
+        titleLabel.setBounds(200, 20, 200, 35); 
         panel.add(titleLabel);
 
 

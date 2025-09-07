@@ -1,4 +1,4 @@
-package model;
+package Pertemuan1.model;
 
 public class Service {
     String id, jenis, harga, status;

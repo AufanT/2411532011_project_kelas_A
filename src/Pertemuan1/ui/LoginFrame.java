@@ -1,9 +1,9 @@
-package ui;
+package Pertemuan1.ui;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import model.User;
+import Pertemuan1.model.User;
 
 public class LoginFrame {
     public static void main(String[] args) {
@@ -11,18 +11,18 @@ public class LoginFrame {
         JFrame frame = new JFrame("Laundry Apps");
         frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null); // biar ke tengah layar
+        frame.setLocationRelativeTo(null); 
 
         // Panel utama
         JPanel panel = new JPanel();
         panel.setLayout(null); // Menggunakan Absolute Layout
-        panel.setBackground(new Color(245, 245, 245)); // warna abu muda
+        panel.setBackground(new Color(245, 245, 245)); 
         frame.add(panel);
 
         // Judul aplikasi
         JLabel titleLabel = new JLabel("Laundry Apps");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        titleLabel.setBounds(130, 20, 200, 30); // x, y, width, height
+        titleLabel.setBounds(130, 20, 200, 30); 
         panel.add(titleLabel);
 
         // Subtitle

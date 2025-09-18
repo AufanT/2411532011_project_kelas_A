@@ -1,8 +1,8 @@
-package table;
+package src.table;
 
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
-import model.User;
+import src.model.User;
 
 public class TableUser extends AbstractTableModel {
     List<User> ls;

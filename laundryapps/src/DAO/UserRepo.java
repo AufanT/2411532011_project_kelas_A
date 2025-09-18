@@ -1,4 +1,4 @@
-package DAO;
+package src.DAO;
 
 import java.util.*;
 import java.sql.Connection;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import confg.Database;
-import model.User;
+import src.confg.Database;
+import src.model.User;
 
 public class UserRepo implements UserDAO {
     private Connection connection;

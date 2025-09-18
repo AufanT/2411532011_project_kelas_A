@@ -1,4 +1,4 @@
-package confg;
+package src.confg;
 
 import java.sql.*;
 import javax.swing.JOptionPane;
@@ -17,8 +17,8 @@ public class Database {
 			return null;
 		}
 	}
-	
-//    public static void main(String[] args) {
-//    	koneksi();
-//    }
+
+   public static void main(String[] args) {
+   	koneksi();
+   }
 }

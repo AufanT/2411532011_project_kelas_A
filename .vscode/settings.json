@@ -1,0 +1,7 @@
+{
+  "java.project.sourcePaths": ["laundryapps"],
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    "d:\\mysql-connector-j-9.0.0\\mysql-connector-j-9.0.0\\mysql-connector-j-9.0.0.jar"
+  ]
+}

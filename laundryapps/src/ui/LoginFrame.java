@@ -1,9 +1,9 @@
-package ui;
+package src.ui;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import model.User;
+import src.model.User;
 
 public class LoginFrame {
     public static void main(String[] args) {

@@ -6,16 +6,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 import src.confg.Database;
 import src.model.User;
 
 public class UserRepo implements UserDAO {
     private Connection connection;
-
+	
     final String insert = "INSERT INTO user (name, username, password) VALUES (?,?,?);";
     final String select = "SELECT * FROM user;";
     final String delete = "DELETE FROM user WHERE id=?;";
@@ -109,4 +109,3 @@ public class UserRepo implements UserDAO {
 	}
 
 }
-

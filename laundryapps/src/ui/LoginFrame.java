@@ -58,6 +58,9 @@ public class LoginFrame {
 
         btnLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                String username = txtUsername.getText().toLowerCase().replaceAll("\\s+", "");
+                String password = new String(txtPassword.getPassword());
+                
                 if (User.login(txtUsername.getText(), new String(txtPassword.getPassword()))) {
                     new MainFrame().setVisible(true);
                     frame.dispose();

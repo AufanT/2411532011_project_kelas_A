@@ -35,15 +35,39 @@ public class MainFrame extends JFrame {
         btnLayanan.setBounds(220, 80, 150, 40);
         panel.add(btnLayanan);
 
+        btnLayanan.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ServiceFrame serviceFrame = new ServiceFrame();
+                serviceFrame.setVisible(true);
+                serviceFrame.loadTable(); 
+            }
+        });
+
         JButton btnPelanggan = new JButton("PELANGGAN");
         btnPelanggan.setBounds(390, 80, 150, 40);
         panel.add(btnPelanggan);
+
+        btnPelanggan.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                CustomerFrame customerFrame = new CustomerFrame();
+                customerFrame.setVisible(true);
+                customerFrame.loadTable(); 
+            }
+        });
 
 
         // Baris kedua: Pengguna, Laporan, Profile
         JButton btnPengguna = new JButton("PENGGUNA");
         btnPengguna.setBounds(50, 140, 150, 40);
         panel.add(btnPengguna);
+
+        btnPengguna.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                UserFrame userFrame = new UserFrame();
+                userFrame.setVisible(true);
+                userFrame.loadTable(); 
+            }
+        });
 
         JButton btnLaporan = new JButton("LAPORAN");
         btnLaporan.setBounds(220, 140, 150, 40);

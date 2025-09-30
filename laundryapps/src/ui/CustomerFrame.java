@@ -6,11 +6,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.*;
-import src.DAO.UserRepo;
-import src.model.User;
-import src.table.TableUser;
+import src.DAO.CustomerRepo;
+import src.model.Customer;
+import src.table.TableCustomer;
 
-public class UserFrame extends JFrame {
+public class CustomerFrame extends JFrame {
 
     private JTextField txtName;
     private JTextField txtUsername;
@@ -21,8 +21,8 @@ public class UserFrame extends JFrame {
     private JButton btnCancel;
     private JTable tableUsers;
 
-    UserRepo usr = new UserRepo();
-    List<User> ls;
+    CustomerRepo cst = new CustomerRepo();
+    List<Customer> ls;
     public String id;
 
     public void reset() {
@@ -32,14 +32,14 @@ public class UserFrame extends JFrame {
     }
 
     public void loadTable() {
-        ls = usr.show(); 
-        TableUser tu = new TableUser(ls); 
+        ls = cst.show(); 
+        TableCustomer tu = new TableCustomer(ls); 
         tableUsers.setModel(tu); 
         tableUsers.getTableHeader().setVisible(true); 
     }
 
-    public UserFrame() {
-        setTitle("User Management");
+    public CustomerFrame() {
+        setTitle("Customer Management");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
@@ -97,7 +97,7 @@ public class UserFrame extends JFrame {
         btnCancel.setBounds(390, 150, 80, 30);
         panel.add(btnCancel);
 
-        // Tabel Users
+        // Tabel Customers
         tableUsers = new JTable();
         JScrollPane scrollPane = new JScrollPane(tableUsers);
         scrollPane.setBounds(30, 200, 520, 150);
@@ -106,10 +106,10 @@ public class UserFrame extends JFrame {
 
         btnSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                User user = new User(); 
-                user.setNama(txtName.getText()); 
-                user.setUsername(txtUsername.getText()); 
-                user.setPassword(txtPassword.getText()); 
+                Customer customer = new Customer(); 
+                customer.setNama(txtName.getText()); 
+                customer.setUsername(txtUsername.getText()); 
+                customer.setPassword(txtPassword.getText()); 
 
                 // validasi password
                 String password = txtPassword.getText();
@@ -118,7 +118,7 @@ public class UserFrame extends JFrame {
                     return; 
                 }
                 
-                usr.save(user); 
+                cst.save(customer); 
                 reset(); 
                 loadTable(); 
             }
@@ -136,16 +136,16 @@ public class UserFrame extends JFrame {
 
         btnUpdate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                User user = new User(); 
-                user.setNama(txtName.getText());
+                Customer customer = new Customer(); 
+                customer.setNama(txtName.getText());
 
                 String username = txtUsername.getText().toLowerCase().replaceAll("\\s+", "");
-                user.setUsername(username); 
+                customer.setUsername(username); 
                 
-                user.setUsername(txtUsername.getText()); 
-                user.setPassword(txtPassword.getText()); 
-                user.setId(id); 
-                usr.update(user); 
+                customer.setUsername(txtUsername.getText()); 
+                customer.setPassword(txtPassword.getText()); 
+                customer.setId(id); 
+                cst.update(customer); 
                 reset(); 
                 loadTable(); 
             }
@@ -154,7 +154,7 @@ public class UserFrame extends JFrame {
         btnDelete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (id != null) {
-                    usr.delete(id);
+                    cst.delete(id);
                     reset();
                     loadTable();
                 } else {
@@ -171,7 +171,7 @@ public class UserFrame extends JFrame {
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            UserFrame frame = new UserFrame(); 
+            CustomerFrame frame = new CustomerFrame(); 
             frame.setVisible(true);
             frame.loadTable();
         });

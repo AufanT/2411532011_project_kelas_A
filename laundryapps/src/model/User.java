@@ -41,8 +41,8 @@ public class User {
         User user = new User();
         user.setId("1");
         user.setNama("fulan");
-        user.setUsername("fulan123");
-        user.setPassword("password");
+        user.setUsername("fulan");
+        user.setPassword("12345");
 
         if (user.getUsername().equalsIgnoreCase(username) && user.getPassword().equalsIgnoreCase(password)) {
             isLoggin = true;

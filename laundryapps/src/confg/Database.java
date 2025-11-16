@@ -1,24 +1,32 @@
 package src.confg;
 
-import java.sql.*;
-import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Database {
-	Connection conn;
-	
-	public static Connection koneksi() {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/laundry_apps", "root", "");
-			// JOptionPane.showMessageDialog(null, "berhasil");
-			return conn;
-		} catch(Exception e) {
-			JOptionPane.showMessageDialog(null, e);
-			return null;
-		}
-	}
-
-//    public static void main(String[] args) {
-//    	koneksi();
-//    }
+    private static Connection connection;
+    
+    private static final String URL = "jdbc:mysql://localhost:3306/laundry_apps";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+    
+    public static Connection koneksi() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                    connection.setAutoCommit(true);
+                } catch (ClassNotFoundException e) {
+                    return null;
+                } catch (SQLException e) {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            return null;
+        }
+        return connection;
+    }
 }

@@ -3,7 +3,9 @@ package src.ui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import src.error.ValidationException;
 import src.model.User;
+import src.util.ValidationUtil;
 
 public class LoginFrame {
     public static void main(String[] args) {
@@ -15,7 +17,7 @@ public class LoginFrame {
 
         // Panel utama
         JPanel panel = new JPanel();
-        panel.setLayout(null); // Menggunakan Absolute Layout
+        panel.setLayout(null); 
         panel.setBackground(new Color(245, 245, 245)); 
         frame.add(panel);
 
@@ -58,14 +60,27 @@ public class LoginFrame {
 
         btnLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String username = txtUsername.getText().toLowerCase().replaceAll("\\s+", "");
+                String username = txtUsername.getText();
                 String password = new String(txtPassword.getPassword());
-                
-                if (User.login(txtUsername.getText(), new String(txtPassword.getPassword()))) {
-                    new MainFrame().setVisible(true);
-                    frame.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Login Gagal");
+
+                try {
+                    User user = new User();
+                    user.setUsername(username);
+                    user.setPassword(password);
+
+                    ValidationUtil.validateUser(user);
+
+                    if (User.login(username, password)) {
+                        new MainFrame().setVisible(true);
+                        frame.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Login Gagal: Username atau password salah.");
+                    }
+
+                } catch (ValidationException | NullPointerException exception) {
+                    JOptionPane.showMessageDialog(null, "Login Gagal: " + exception.getMessage());
+                } finally {
+                    System.out.println("Percobaan login selesai.");
                 }
             }
         });

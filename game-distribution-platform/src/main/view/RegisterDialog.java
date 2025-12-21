@@ -1,7 +1,7 @@
 package main.view;
 
 import java.awt.*;
-import javax.swing.*; // <-- Import Style Baru
+import javax.swing.*; 
 import main.error.RegisterFailedException;
 import main.utils.DataManager;
 import main.utils.StyleTheme;
@@ -13,7 +13,7 @@ public class RegisterDialog extends JDialog {
         setSize(350, 480);
         setLocationRelativeTo(parent);
         setLayout(null);
-        getContentPane().setBackground(StyleTheme.BG_DARK); // Pakai warna tema
+        getContentPane().setBackground(StyleTheme.BG_DARK);
 
         initUI();
     }
@@ -25,7 +25,6 @@ public class RegisterDialog extends JDialog {
         title.setBounds(85, 30, 200, 30);
         add(title);
 
-        // Input Fields (Sekarang pakai Modern Component)
         add(createLabel("USERNAME (No Space)", 80));
         JTextField userTxt = new StyleTheme.ModernTextField();
         userTxt.setBounds(50, 105, 240, 40);
@@ -41,7 +40,6 @@ public class RegisterDialog extends JDialog {
         confirmTxt.setBounds(50, 265, 240, 40);
         add(confirmTxt);
 
-        // Tombol Modern
         JButton regBtn = new StyleTheme.ModernButton("CREATE ACCOUNT", StyleTheme.ACCENT_BLUE, Color.BLACK);
         regBtn.setBounds(50, 340, 240, 45);
 
@@ -64,7 +62,6 @@ public class RegisterDialog extends JDialog {
         add(regBtn);
     }
 
-    // Helper Label Saja (Field & Button sudah pakai class StyleTheme)
     private JLabel createLabel(String text, int y) {
         JLabel l = new JLabel(text);
         l.setForeground(StyleTheme.ACCENT_BLUE);

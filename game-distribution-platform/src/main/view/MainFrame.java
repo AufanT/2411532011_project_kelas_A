@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import main.error.*;
 import main.model.*;
 import main.utils.DataManager;
-import main.utils.StyleTheme; // Import Style Baru Kita
+import main.utils.StyleTheme; 
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -28,8 +28,7 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Set Icon Aplikasi (Opsional)
-        // setIconImage(new ImageIcon("path/to/icon.png").getImage());
+        setIconImage(new ImageIcon("C:\\Users\\VICTUS\\Downloads\\mini-steam-icon.png").getImage());
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -46,20 +45,21 @@ public class MainFrame extends JFrame {
         panel.setLayout(null);
         panel.setBackground(StyleTheme.BG_DARK);
 
-        // BOX LOGIN (Sekarang pakai Rounded Background manual via paint)
         JPanel loginBox = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g;
+                Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
                 g2.setColor(StyleTheme.BG_PANEL);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Box Melengkung
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); 
                 
-                // Tambah Border Tipis Biru
                 g2.setColor(StyleTheme.ACCENT_BLUE);
-                g2.setStroke(new BasicStroke(1));
-                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+                g2.setStroke(new BasicStroke(1.5f)); 
+
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 30, 30);
+                
+                g2.dispose();
             }
         };
         loginBox.setOpaque(false);
@@ -76,9 +76,8 @@ public class MainFrame extends JFrame {
         userLbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
         userLbl.setBounds(40, 80, 100, 20);
 
-        // GANTI KE MODERN COMPONENT
         JTextField userTxt = new StyleTheme.ModernTextField();
-        userTxt.setBounds(40, 105, 320, 40); // Tinggi field diperbesar dikit (35 -> 40) biar cantik
+        userTxt.setBounds(40, 105, 320, 40);
 
         JLabel passLbl = new JLabel("PASSWORD");
         passLbl.setForeground(StyleTheme.ACCENT_BLUE);
@@ -88,7 +87,6 @@ public class MainFrame extends JFrame {
         JPasswordField passTxt = new StyleTheme.ModernPasswordField();
         passTxt.setBounds(40, 185, 320, 40);
 
-        // TOMBOL MODERN
         JButton loginBtn = new StyleTheme.ModernButton("LOGIN", StyleTheme.ACCENT_BLUE, Color.BLACK);
         loginBtn.setBounds(40, 260, 320, 45);
 
@@ -102,7 +100,6 @@ public class MainFrame extends JFrame {
         regLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
         regLink.setBounds(210, 330, 100, 30);
 
-        // Hover Effect untuk Link
         regLink.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { new RegisterDialog(MainFrame.this).setVisible(true); }
             public void mouseEntered(MouseEvent e) { regLink.setForeground(StyleTheme.ACCENT_BLUE); }
@@ -137,7 +134,7 @@ public class MainFrame extends JFrame {
         loginBox.add(passLbl); loginBox.add(passTxt);
         loginBox.add(loginBtn);
         loginBox.add(noAccountLbl);
-        loginBox.add(regLink); // Pakai JLabel link lebih modern drpd button biasa
+        loginBox.add(regLink);
 
         panel.add(loginBox);
         return panel;
@@ -155,19 +152,17 @@ public class MainFrame extends JFrame {
         title.setForeground(StyleTheme.TEXT_MAIN);
         title.setBounds(30, 20, 300, 30);
 
-        // TABEL MODERN
         String[] col = {"ID", "Title", "Genre", "Price"};
         tableModel = new DefaultTableModel(col, 0);
         JTable table = new JTable(tableModel);
-        StyleTheme.styleTable(table); // <-- TERAPKAN STYLE DISINI
+        StyleTheme.styleTable(table); 
         refreshTable();
 
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBounds(30, 70, 925, 450);
         scroll.getViewport().setBackground(StyleTheme.BG_PANEL);
-        scroll.setBorder(BorderFactory.createEmptyBorder()); // Hilangkan border scrollpane
+        scroll.setBorder(BorderFactory.createEmptyBorder());
 
-        // TOMBOL MODERN
         JButton addBtn = new StyleTheme.ModernButton("+ ADD NEW GAME", StyleTheme.ACCENT_BLUE, Color.BLACK);
         addBtn.setBounds(750, 20, 200, 35);
 
@@ -242,7 +237,6 @@ public class MainFrame extends JFrame {
 
         RegularUser user = (RegularUser) dataManager.getCurrentUser();
 
-        // HEADER (Tetap sama, sudah oke)
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(StyleTheme.BG_DARK);
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
@@ -268,7 +262,6 @@ public class MainFrame extends JFrame {
         header.add(rightHeader, BorderLayout.EAST);
 
         topUpBtn.addActionListener(e -> {
-           // ... (Logic Top Up tetap sama) ...
             String input = JOptionPane.showInputDialog(this, "Masukkan Jumlah Top Up (Rp):");
             if (input != null && !input.isEmpty()) {
                 try {
@@ -284,7 +277,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-        // TABS (Update Font Disini)
         JTabbedPane tabbedPane = new JTabbedPane();
 
         StyleTheme.styleTabbedPane(tabbedPane);
@@ -298,7 +290,7 @@ public class MainFrame extends JFrame {
         JPanel wishlistPanel = createWishlistTab(user);
         tabbedPane.addTab(" WISHLIST ", wishlistPanel);
 
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10)); // Tambah padding footer
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10)); 
         footer.setBackground(StyleTheme.BG_DARK);
         JButton logoutBtn = new StyleTheme.ModernButton("LOGOUT", StyleTheme.ACCENT_RED, Color.WHITE);
         logoutBtn.setPreferredSize(new Dimension(100, 35));
@@ -321,7 +313,7 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-   private JPanel createStoreTab(RegularUser user, JLabel balLabel) {
+    private JPanel createStoreTab(RegularUser user, JLabel balLabel) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(StyleTheme.BG_DARK);
         
@@ -333,20 +325,17 @@ public class MainFrame extends JFrame {
         list.setForeground(StyleTheme.TEXT_MAIN);
         list.setCellRenderer(createGameRenderer());
         JScrollPane scroll = new JScrollPane(list);
-        scroll.setBorder(BorderFactory.createEmptyBorder()); // Hapus border scroll
+        scroll.setBorder(BorderFactory.createEmptyBorder());
         
-        // --- PANEL TOMBOL LEBIH MODERN ---
-        // Gunakan FlowLayout CENTER dengan gap horizontal 20, vertikal 15
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
-        btnPanel.setBackground(StyleTheme.BG_PANEL); // Warna background sedikit lebih terang
+        btnPanel.setBackground(StyleTheme.BG_PANEL); 
         
         JButton buyBtn = new StyleTheme.ModernButton("BUY GAME", StyleTheme.ACCENT_GREEN, Color.WHITE);
-        buyBtn.setPreferredSize(new Dimension(140, 40)); // Ukuran tombol konsisten
+        buyBtn.setPreferredSize(new Dimension(140, 40)); 
         
         JButton wishBtn = new StyleTheme.ModernButton("ADD TO WISHLIST", Color.ORANGE, Color.BLACK);
         wishBtn.setPreferredSize(new Dimension(160, 40));
 
-        // ... (Logic buyBtn dan wishBtn TETAP SAMA seperti sebelumnya) ...
         buyBtn.addActionListener(e -> {
             Game g = list.getSelectedValue();
             if(g != null) {
@@ -396,7 +385,6 @@ public class MainFrame extends JFrame {
         DefaultListModel<Game> wishModel = new DefaultListModel<>();
         for(Game g : dataManager.getUserWishlist(user.getId())) wishModel.addElement(g);
         
-        // --- CEK EMPTY STATE ---
         if (wishModel.isEmpty()) {
             JLabel emptyLbl = new JLabel("Wishlist kamu masih kosong.", SwingConstants.CENTER);
             emptyLbl.setForeground(Color.GRAY);
@@ -410,7 +398,6 @@ public class MainFrame extends JFrame {
             JScrollPane scroll = new JScrollPane(list);
             scroll.setBorder(BorderFactory.createEmptyBorder());
             
-            // Panel Tombol Rata Tengah
             JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
             btnPanel.setBackground(StyleTheme.BG_PANEL);
 
@@ -420,7 +407,6 @@ public class MainFrame extends JFrame {
             JButton removeBtn = new StyleTheme.ModernButton("REMOVE", StyleTheme.ACCENT_RED, Color.WHITE);
             removeBtn.setPreferredSize(new Dimension(130, 40));
             
-            // ... (Logic buyBtn dan removeBtn TETAP SAMA) ...
             buyBtn.addActionListener(e -> {
                 Game g = list.getSelectedValue();
                 if(g != null) {
@@ -457,7 +443,7 @@ public class MainFrame extends JFrame {
         panel.repaint();
     }
 
-    private JPanel createLibraryTab(RegularUser user) { return new JPanel(); } // Placeholder
+    private JPanel createLibraryTab(RegularUser user) { return new JPanel(); }
 
     private void refreshLibraryTab(JPanel panel, RegularUser user) {
         panel.removeAll(); 
@@ -467,14 +453,12 @@ public class MainFrame extends JFrame {
         DefaultListModel<Game> libModel = new DefaultListModel<>();
         for(Game g : dataManager.getUserLibrary(user.getId())) libModel.addElement(g);
         
-        // --- CEK EMPTY STATE ---
         if (libModel.isEmpty()) {
             JLabel emptyLbl = new JLabel("Belum ada game di Library. Yuk beli di Store!", SwingConstants.CENTER);
             emptyLbl.setForeground(Color.GRAY);
             emptyLbl.setFont(new Font("Segoe UI", Font.ITALIC, 18));
             panel.add(emptyLbl, BorderLayout.CENTER);
         } else {
-            // Jika ada isinya, tampilkan list dan tombol Play
             JList<Game> list = new JList<>(libModel);
             list.setBackground(StyleTheme.BG_PANEL);
             list.setForeground(StyleTheme.TEXT_MAIN);
@@ -482,12 +466,11 @@ public class MainFrame extends JFrame {
             JScrollPane scroll = new JScrollPane(list);
             scroll.setBorder(BorderFactory.createEmptyBorder());
 
-            // Panel Tombol Play Rata Tengah
             JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 15));
             btnPanel.setBackground(StyleTheme.BG_PANEL);
 
             JButton playBtn = new StyleTheme.ModernButton("PLAY GAME", StyleTheme.ACCENT_BLUE, Color.BLACK);
-            playBtn.setPreferredSize(new Dimension(180, 45)); // Tombol Play lebih besar
+            playBtn.setPreferredSize(new Dimension(180, 45)); 
             playBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
             
             playBtn.addActionListener(e -> {

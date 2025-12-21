@@ -6,7 +6,7 @@ import main.error.GameSudahAdaException;
 import main.error.InputTidakValidException;
 import main.model.Game;
 import main.utils.DataManager;
-import main.utils.StyleTheme; // <-- Import Style Baru
+import main.utils.StyleTheme;
 
 public class AddGameDialog extends JDialog {
     private MainFrame parent;
@@ -22,14 +22,13 @@ public class AddGameDialog extends JDialog {
         this.parent = parent;
         this.gameToEdit = gameToEdit;
         
-        setSize(400, 520); // Sedikit lebih tinggi biar lega
+        setSize(400, 520); 
         setLocationRelativeTo(parent);
         setLayout(null);
         getContentPane().setBackground(StyleTheme.BG_DARK);
 
         initUI();
         
-        // Isi data jika mode EDIT
         if (gameToEdit != null) {
             titleTxt.setText(gameToEdit.getTitle());
             genreTxt.setText(gameToEdit.getGenre());
@@ -45,7 +44,6 @@ public class AddGameDialog extends JDialog {
         head.setBounds(110, 20, 200, 30);
         add(head);
 
-        // --- INPUT FIELDS (Modern) ---
         add(createLabel("TITLE", 70));
         titleTxt = new StyleTheme.ModernTextField();
         titleTxt.setBounds(50, 95, 280, 40);
@@ -66,7 +64,6 @@ public class AddGameDialog extends JDialog {
         imageTxt.setBounds(50, 335, 280, 40);
         add(imageTxt);
 
-        // --- BUTTONS (Modern) ---
         String btnText = gameToEdit == null ? "SAVE GAME" : "UPDATE DATA";
         JButton saveBtn = new StyleTheme.ModernButton(btnText, StyleTheme.ACCENT_BLUE, Color.BLACK);
         saveBtn.setBounds(50, 410, 140, 40);
@@ -127,7 +124,7 @@ public class AddGameDialog extends JDialog {
 
     private JLabel createLabel(String text, int y) {
         JLabel l = new JLabel(text);
-        l.setForeground(StyleTheme.ACCENT_BLUE); // Ganti jadi biru biar senada
+        l.setForeground(StyleTheme.ACCENT_BLUE);
         l.setBounds(50, y, 200, 20);
         l.setFont(new Font("Segoe UI", Font.BOLD, 11));
         return l;

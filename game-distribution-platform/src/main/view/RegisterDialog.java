@@ -1,51 +1,49 @@
 package main.view;
 
 import java.awt.*;
-import javax.swing.*; // Import Exception Baru
+import javax.swing.*; // <-- Import Style Baru
 import main.error.RegisterFailedException;
 import main.utils.DataManager;
+import main.utils.StyleTheme;
 
 public class RegisterDialog extends JDialog {
     
-    // Warna Tema
-    private final Color BG_DARK = Color.decode("#171a21");
-    private final Color TEXT_WHITE = Color.decode("#c7d5e0");
-    private final Color ACCENT_BLUE = Color.decode("#66c0f4");
-
     public RegisterDialog(JFrame parent) {
         super(parent, "Create New Account", true);
-        setSize(350, 450); // Agak tinggian dikit biar lega
+        setSize(350, 480);
         setLocationRelativeTo(parent);
         setLayout(null);
-        getContentPane().setBackground(BG_DARK);
+        getContentPane().setBackground(StyleTheme.BG_DARK); // Pakai warna tema
 
         initUI();
     }
 
     private void initUI() {
         JLabel title = new JLabel("JOIN MINI STEAM");
-        title.setFont(new Font("SansSerif", Font.BOLD, 20));
-        title.setForeground(ACCENT_BLUE);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setForeground(StyleTheme.ACCENT_BLUE);
         title.setBounds(85, 30, 200, 30);
         add(title);
 
-        // Input Fields
+        // Input Fields (Sekarang pakai Modern Component)
         add(createLabel("USERNAME (No Space)", 80));
-        JTextField userTxt = createField(100);
+        JTextField userTxt = new StyleTheme.ModernTextField();
+        userTxt.setBounds(50, 105, 240, 40);
         add(userTxt);
 
-        add(createLabel("PASSWORD (Min 5 Char)", 150));
-        JPasswordField passTxt = createPasswordField(170);
+        add(createLabel("PASSWORD (Min 5 Char)", 160));
+        JPasswordField passTxt = new StyleTheme.ModernPasswordField();
+        passTxt.setBounds(50, 185, 240, 40);
         add(passTxt);
 
-        add(createLabel("CONFIRM PASSWORD", 220));
-        JPasswordField confirmTxt = createPasswordField(240);
+        add(createLabel("CONFIRM PASSWORD", 240));
+        JPasswordField confirmTxt = new StyleTheme.ModernPasswordField();
+        confirmTxt.setBounds(50, 265, 240, 40);
         add(confirmTxt);
 
-        // Buttons
-        JButton regBtn = new JButton("CREATE ACCOUNT");
-        styleButton(regBtn, ACCENT_BLUE, Color.BLACK);
-        regBtn.setBounds(50, 310, 240, 40);
+        // Tombol Modern
+        JButton regBtn = new StyleTheme.ModernButton("CREATE ACCOUNT", StyleTheme.ACCENT_BLUE, Color.BLACK);
+        regBtn.setBounds(50, 340, 240, 45);
 
         regBtn.addActionListener(e -> {
             String u = userTxt.getText();
@@ -53,17 +51,12 @@ public class RegisterDialog extends JDialog {
             String c = new String(confirmTxt.getPassword());
 
             try {
-                // Panggil Backend (Semua pengecekan ada di sana sekarang)
                 DataManager.getInstance().registerUser(u, p, c);
-
-                JOptionPane.showMessageDialog(this, "Registrasi Berhasil! Silakan Login dengan akun baru.");
-                dispose(); // Tutup window
-
+                JOptionPane.showMessageDialog(this, "Registrasi Berhasil! Silakan Login.");
+                dispose();
             } catch (RegisterFailedException ex) {
-                // Tangkap Error Validasi (Username kembar, password beda, spasi, dll)
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Registrasi Gagal", JOptionPane.WARNING_MESSAGE);
             } catch (Exception ex) {
-                // Tangkap Error Lainnya
                 JOptionPane.showMessageDialog(this, "System Error: " + ex.getMessage());
             }
         });
@@ -71,39 +64,12 @@ public class RegisterDialog extends JDialog {
         add(regBtn);
     }
 
-    // Helper Styles
+    // Helper Label Saja (Field & Button sudah pakai class StyleTheme)
     private JLabel createLabel(String text, int y) {
         JLabel l = new JLabel(text);
-        l.setForeground(Color.GRAY);
+        l.setForeground(StyleTheme.ACCENT_BLUE);
         l.setBounds(50, y, 200, 20);
-        l.setFont(new Font("SansSerif", Font.BOLD, 11));
+        l.setFont(new Font("Segoe UI", Font.BOLD, 11));
         return l;
-    }
-
-    private JTextField createField(int y) {
-        JTextField t = new JTextField();
-        t.setBounds(50, y, 240, 35);
-        t.setBackground(Color.decode("#32353C"));
-        t.setForeground(TEXT_WHITE);
-        t.setCaretColor(TEXT_WHITE);
-        t.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        return t;
-    }
-    
-    private JPasswordField createPasswordField(int y) {
-        JPasswordField t = new JPasswordField();
-        t.setBounds(50, y, 240, 35);
-        t.setBackground(Color.decode("#32353C"));
-        t.setForeground(TEXT_WHITE);
-        t.setCaretColor(TEXT_WHITE);
-        t.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        return t;
-    }
-
-    private void styleButton(JButton b, Color bg, Color fg) {
-        b.setBackground(bg);
-        b.setForeground(fg);
-        b.setFocusPainted(false);
-        b.setFont(new Font("SansSerif", Font.BOLD, 12));
     }
 }

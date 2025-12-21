@@ -2,40 +2,34 @@ package main.view;
 
 import java.awt.*;
 import javax.swing.*;
-import main.error.GameSudahAdaException; // Import Exception Validasi
-import main.error.InputTidakValidException;    // Import Exception Duplikat
+import main.error.GameSudahAdaException;
+import main.error.InputTidakValidException;
 import main.model.Game;
 import main.utils.DataManager;
+import main.utils.StyleTheme; // <-- Import Style Baru
 
 public class AddGameDialog extends JDialog {
     private MainFrame parent;
     private JTextField titleTxt, genreTxt, priceTxt, imageTxt;
     private Game gameToEdit; 
     
-    // Warna Tema Steam
-    private final Color BG_DARK = Color.decode("#171a21");
-    private final Color TEXT_WHITE = Color.decode("#c7d5e0");
-    private final Color ACCENT_BLUE = Color.decode("#66c0f4");
-
-    // Constructor 1: Mode ADD
     public AddGameDialog(MainFrame parent) {
         this(parent, null);
     }
 
-    // Constructor 2: Mode EDIT
     public AddGameDialog(MainFrame parent, Game gameToEdit) {
         super(parent, gameToEdit == null ? "Add New Game" : "Edit Game", true);
         this.parent = parent;
         this.gameToEdit = gameToEdit;
         
-        setSize(400, 480);
+        setSize(400, 520); // Sedikit lebih tinggi biar lega
         setLocationRelativeTo(parent);
         setLayout(null);
-        getContentPane().setBackground(BG_DARK);
+        getContentPane().setBackground(StyleTheme.BG_DARK);
 
         initUI();
         
-        // JIKA MODE EDIT: Isi form dengan data lama
+        // Isi data jika mode EDIT
         if (gameToEdit != null) {
             titleTxt.setText(gameToEdit.getTitle());
             genreTxt.setText(gameToEdit.getGenre());
@@ -46,64 +40,55 @@ public class AddGameDialog extends JDialog {
 
     private void initUI() {
         JLabel head = new JLabel(gameToEdit == null ? "ADD NEW GAME" : "EDIT GAME DATA");
-        head.setForeground(ACCENT_BLUE);
-        head.setFont(new Font("SansSerif", Font.BOLD, 18));
-        head.setBounds(120, 20, 200, 30);
+        head.setForeground(StyleTheme.ACCENT_BLUE);
+        head.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        head.setBounds(110, 20, 200, 30);
         add(head);
 
-        // --- INPUT FIELDS ---
+        // --- INPUT FIELDS (Modern) ---
         add(createLabel("TITLE", 70));
-        titleTxt = createField(90);
+        titleTxt = new StyleTheme.ModernTextField();
+        titleTxt.setBounds(50, 95, 280, 40);
         add(titleTxt);
 
-        add(createLabel("GENRE", 140));
-        genreTxt = createField(160);
+        add(createLabel("GENRE", 150));
+        genreTxt = new StyleTheme.ModernTextField();
+        genreTxt.setBounds(50, 175, 280, 40);
         add(genreTxt);
 
-        add(createLabel("PRICE (Rp)", 210));
-        priceTxt = createField(230);
+        add(createLabel("PRICE (Rp)", 230));
+        priceTxt = new StyleTheme.ModernTextField();
+        priceTxt.setBounds(50, 255, 280, 40);
         add(priceTxt);
 
-        add(createLabel("IMAGE URL (Link Gambar)", 280));
-        imageTxt = createField(300);
+        add(createLabel("IMAGE URL (Link Gambar)", 310));
+        imageTxt = new StyleTheme.ModernTextField();
+        imageTxt.setBounds(50, 335, 280, 40);
         add(imageTxt);
 
-        // --- BUTTONS ---
-        JButton saveBtn = new JButton(gameToEdit == null ? "SAVE GAME" : "UPDATE DATA");
-        saveBtn.setBackground(ACCENT_BLUE);
-        saveBtn.setForeground(Color.BLACK);
-        saveBtn.setBounds(50, 370, 140, 35);
-        saveBtn.setFocusPainted(false);
+        // --- BUTTONS (Modern) ---
+        String btnText = gameToEdit == null ? "SAVE GAME" : "UPDATE DATA";
+        JButton saveBtn = new StyleTheme.ModernButton(btnText, StyleTheme.ACCENT_BLUE, Color.BLACK);
+        saveBtn.setBounds(50, 410, 140, 40);
 
-        JButton cancelBtn = new JButton("CANCEL");
-        cancelBtn.setBackground(Color.RED);
-        cancelBtn.setForeground(Color.WHITE);
-        cancelBtn.setBounds(210, 370, 120, 35);
-        cancelBtn.setFocusPainted(false);
+        JButton cancelBtn = new StyleTheme.ModernButton("CANCEL", StyleTheme.ACCENT_RED, Color.WHITE);
+        cancelBtn.setBounds(210, 410, 120, 40);
 
-        // LOGIC SAVE / UPDATE
         saveBtn.addActionListener(e -> {
             try {
-                // 1. Validasi Input Kosong
-                if (titleTxt.getText().trim().isEmpty()) 
-                    throw new InputTidakValidException("Judul wajib diisi!");
+                if (titleTxt.getText().trim().isEmpty()) throw new InputTidakValidException("Judul wajib diisi!");
                 
-                // 2. Validasi Harga (Harus Angka & Tidak Negatif)
                 double price;
                 try {
                     price = Double.parseDouble(priceTxt.getText());
                 } catch (NumberFormatException ex) {
                     throw new InputTidakValidException("Harga harus berupa angka valid!");
                 }
-                
-                if (price < 0) 
-                    throw new InputTidakValidException("Harga tidak boleh negatif!");
+                if (price < 0) throw new InputTidakValidException("Harga tidak boleh negatif!");
 
                 String inputTitle = titleTxt.getText().trim();
                 DataManager dataManager = DataManager.getInstance();
 
-                // 3. CEK DUPLIKAT JUDUL (EXCEPTION BARU DISINI)
-                // Logic: Cek duplikat jika ini game BARU, ATAU jika EDIT tapi judulnya diganti
                 boolean isNewGame = (gameToEdit == null);
                 boolean titleChanged = (gameToEdit != null && !gameToEdit.getTitle().equalsIgnoreCase(inputTitle));
 
@@ -111,51 +96,26 @@ public class AddGameDialog extends JDialog {
                     throw new GameSudahAdaException(inputTitle);
                 }
 
-                // --- PROSES SIMPAN ---
-                String id;
-                if (gameToEdit == null) {
-                    // MODE ADD
-                    int rand = (int)(Math.random() * 9000) + 1000;
-                    id = "G" + rand;
-                } else {
-                    // MODE EDIT
-                    id = gameToEdit.getId();
-                }
-
-                String imgPath = imageTxt.getText();
-                if (imgPath.isEmpty()) {
-                    imgPath = "https://cdn.akamai.steamstatic.com/steam/apps/2358720/header.jpg"; 
-                }
+                String id = (gameToEdit == null) ? "G" + ((int)(Math.random() * 9000) + 1000) : gameToEdit.getId();
+                String imgPath = imageTxt.getText().isEmpty() ? "https://cdn.akamai.steamstatic.com/steam/apps/2358720/header.jpg" : imageTxt.getText();
 
                 Game resultGame = new Game.Builder()
                     .setId(id)
-                    .setTitle(inputTitle) // Pakai judul yg sudah di-trim
+                    .setTitle(inputTitle)
                     .setGenre(genreTxt.getText())
                     .setPrice(price)
                     .setImagePath(imgPath)
                     .build();
 
-                if (gameToEdit == null) {
-                    dataManager.addGame(resultGame);
-                } else {
-                    dataManager.updateGame(resultGame);
-                }
+                if (gameToEdit == null) dataManager.addGame(resultGame);
+                else dataManager.updateGame(resultGame);
                 
                 JOptionPane.showMessageDialog(this, "Berhasil Disimpan!");
                 parent.refreshTable();
                 dispose();
 
-            } catch (InputTidakValidException ex) {
-                // Tangkap Error Validasi Input
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Input Salah", JOptionPane.WARNING_MESSAGE);
-            
-            } catch (GameSudahAdaException ex) {
-                // Tangkap Error Duplikat Judul
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Duplikat", JOptionPane.ERROR_MESSAGE);
-            
             } catch (Exception ex) {
-                // Tangkap Error Lainnya (System)
-                JOptionPane.showMessageDialog(this, "System Error: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
             }
         });
 
@@ -167,19 +127,9 @@ public class AddGameDialog extends JDialog {
 
     private JLabel createLabel(String text, int y) {
         JLabel l = new JLabel(text);
-        l.setForeground(Color.GRAY);
+        l.setForeground(StyleTheme.ACCENT_BLUE); // Ganti jadi biru biar senada
         l.setBounds(50, y, 200, 20);
-        l.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        l.setFont(new Font("Segoe UI", Font.BOLD, 11));
         return l;
-    }
-
-    private JTextField createField(int y) {
-        JTextField t = new JTextField();
-        t.setBounds(50, y, 280, 30);
-        t.setBackground(Color.decode("#32353C"));
-        t.setForeground(TEXT_WHITE);
-        t.setCaretColor(TEXT_WHITE);
-        t.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        return t;
     }
 }

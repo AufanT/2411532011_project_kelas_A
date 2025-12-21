@@ -1,27 +1,20 @@
 package main.view;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-import main.error.GameSudahDiWishlistException;
-import main.error.GameSudahDimilikiException;
-import main.error.InputTidakValidException;
-import main.error.SaldoKurangException;
+import main.error.*;
 import main.model.*;
 import main.utils.DataManager;
+import main.utils.StyleTheme; // Import Style Baru Kita
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private DataManager dataManager;
-
-    private final Color BG_DARK = Color.decode("#1b2838");
-    private final Color BG_DARKER = Color.decode("#171a21");
-    private final Color TEXT_WHITE = Color.decode("#c7d5e0");
-    private final Color ACCENT_BLUE = Color.decode("#66c0f4");
-    private final Color ACCENT_GREEN = Color.decode("#a4d007");
 
     public MainFrame() {
         dataManager = DataManager.getInstance();
@@ -35,9 +28,12 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
+        // Set Icon Aplikasi (Opsional)
+        // setIconImage(new ImageIcon("path/to/icon.png").getImage());
+
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-        mainPanel.setBackground(BG_DARK);
+        mainPanel.setBackground(StyleTheme.BG_DARK);
 
         mainPanel.add(createLoginPanel(), "LOGIN");
         add(mainPanel);
@@ -48,66 +44,77 @@ public class MainFrame extends JFrame {
     private JPanel createLoginPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(null);
-        panel.setBackground(BG_DARK);
+        panel.setBackground(StyleTheme.BG_DARK);
 
-        JPanel loginBox = new JPanel();
+        // BOX LOGIN (Sekarang pakai Rounded Background manual via paint)
+        JPanel loginBox = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(StyleTheme.BG_PANEL);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Box Melengkung
+                
+                // Tambah Border Tipis Biru
+                g2.setColor(StyleTheme.ACCENT_BLUE);
+                g2.setStroke(new BasicStroke(1));
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+            }
+        };
+        loginBox.setOpaque(false);
         loginBox.setLayout(null);
-        loginBox.setBackground(BG_DARKER);
-        loginBox.setBounds(300, 150, 400, 400); // <-- PERBESAR DIKIT TINGGINYA (350 -> 400)
-        loginBox.setBorder(new LineBorder(ACCENT_BLUE, 1));
+        loginBox.setBounds(300, 150, 400, 400);
 
         JLabel title = new JLabel("SIGN IN");
-        title.setFont(new Font("SansSerif", Font.BOLD, 28));
-        title.setForeground(ACCENT_BLUE);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        title.setForeground(StyleTheme.ACCENT_BLUE);
         title.setBounds(145, 20, 200, 40);
 
         JLabel userLbl = new JLabel("USERNAME");
-        userLbl.setForeground(TEXT_WHITE);
+        userLbl.setForeground(StyleTheme.ACCENT_BLUE);
+        userLbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
         userLbl.setBounds(40, 80, 100, 20);
 
-        JTextField userTxt = new JTextField();
-        styleField(userTxt);
-        userTxt.setBounds(40, 105, 320, 35);
+        // GANTI KE MODERN COMPONENT
+        JTextField userTxt = new StyleTheme.ModernTextField();
+        userTxt.setBounds(40, 105, 320, 40); // Tinggi field diperbesar dikit (35 -> 40) biar cantik
 
         JLabel passLbl = new JLabel("PASSWORD");
-        passLbl.setForeground(TEXT_WHITE);
+        passLbl.setForeground(StyleTheme.ACCENT_BLUE);
+        passLbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
         passLbl.setBounds(40, 160, 100, 20);
 
-        JPasswordField passTxt = new JPasswordField();
-        styleField(passTxt);
-        passTxt.setBounds(40, 185, 320, 35);
+        JPasswordField passTxt = new StyleTheme.ModernPasswordField();
+        passTxt.setBounds(40, 185, 320, 40);
 
-        JButton loginBtn = new JButton("LOGIN");
-        styleButton(loginBtn, ACCENT_BLUE, Color.BLACK);
+        // TOMBOL MODERN
+        JButton loginBtn = new StyleTheme.ModernButton("LOGIN", StyleTheme.ACCENT_BLUE, Color.BLACK);
         loginBtn.setBounds(40, 260, 320, 45);
 
-        // --- TOMBOL REGISTER BARU ---
         JLabel noAccountLbl = new JLabel("Belum punya akun?");
         noAccountLbl.setForeground(Color.GRAY);
+        noAccountLbl.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         noAccountLbl.setBounds(90, 330, 120, 30);
         
-        JButton regBtn = new JButton("Daftar Disini");
-        regBtn.setForeground(ACCENT_BLUE);
-        regBtn.setBackground(BG_DARKER);
-        regBtn.setBorder(null);
-        regBtn.setFocusPainted(false);
-        regBtn.setBounds(210, 330, 100, 30);
-        regBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        JLabel regLink = new JLabel("<html><u>Daftar Disini</u></html>");
+        regLink.setForeground(StyleTheme.TEXT_MAIN);
+        regLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        regLink.setBounds(210, 330, 100, 30);
 
-        // LOGIC BUKA REGISTER
-        regBtn.addActionListener(e -> {
-            new RegisterDialog(this).setVisible(true);
+        // Hover Effect untuk Link
+        regLink.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) { new RegisterDialog(MainFrame.this).setVisible(true); }
+            public void mouseEntered(MouseEvent e) { regLink.setForeground(StyleTheme.ACCENT_BLUE); }
+            public void mouseExited(MouseEvent e) { regLink.setForeground(StyleTheme.TEXT_MAIN); }
         });
-        // ---------------------------
 
         loginBtn.addActionListener(e -> {
             try {
                 String u = userTxt.getText();
                 String p = new String(passTxt.getPassword());
 
-                if (u.isEmpty() || p.isEmpty()) {
-                    throw new InputTidakValidException("Username dan Password harus diisi!");
-                }
+                if (u.isEmpty() || p.isEmpty()) throw new InputTidakValidException("Username dan Password harus diisi!");
 
                 if (dataManager.login(u, p)) {
                     if (dataManager.getCurrentUser().getRole().equals("ADMIN")) {
@@ -120,7 +127,6 @@ public class MainFrame extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Username/Password Salah!", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
-
             } catch (InputTidakValidException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
             }
@@ -130,77 +136,62 @@ public class MainFrame extends JFrame {
         loginBox.add(userLbl); loginBox.add(userTxt);
         loginBox.add(passLbl); loginBox.add(passTxt);
         loginBox.add(loginBtn);
-        
-        // Add component Register
         loginBox.add(noAccountLbl);
-        loginBox.add(regBtn);
+        loginBox.add(regLink); // Pakai JLabel link lebih modern drpd button biasa
 
         panel.add(loginBox);
         return panel;
     }
 
-    // Variabel Global untuk Panel Admin (supaya bisa direfresh dari luar)
     private DefaultTableModel tableModel; 
 
     private JPanel createAdminPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(null);
-        panel.setBackground(BG_DARK);
+        panel.setBackground(StyleTheme.BG_DARK);
 
         JLabel title = new JLabel("ADMIN DASHBOARD");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
-        title.setForeground(TEXT_WHITE);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setForeground(StyleTheme.TEXT_MAIN);
         title.setBounds(30, 20, 300, 30);
 
-        // TABEL
+        // TABEL MODERN
         String[] col = {"ID", "Title", "Genre", "Price"};
         tableModel = new DefaultTableModel(col, 0);
         JTable table = new JTable(tableModel);
-        styleTable(table);
-        refreshTable(); // Load data
+        StyleTheme.styleTable(table); // <-- TERAPKAN STYLE DISINI
+        refreshTable();
 
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setBounds(30, 70, 925, 450); // Tabel lebih panjang ke bawah
-        scroll.getViewport().setBackground(BG_DARKER);
+        scroll.setBounds(30, 70, 925, 450);
+        scroll.getViewport().setBackground(StyleTheme.BG_PANEL);
+        scroll.setBorder(BorderFactory.createEmptyBorder()); // Hilangkan border scrollpane
 
-        // TOMBOL UTAMA
-        JButton addBtn = new JButton("+ ADD NEW GAME");
-        styleButton(addBtn, ACCENT_BLUE, Color.BLACK);
+        // TOMBOL MODERN
+        JButton addBtn = new StyleTheme.ModernButton("+ ADD NEW GAME", StyleTheme.ACCENT_BLUE, Color.BLACK);
         addBtn.setBounds(750, 20, 200, 35);
 
-        // Tombol Aksi di Bawah
-        JButton editBtn = new JButton("EDIT SELECTED");
-        styleButton(editBtn, Color.ORANGE, Color.BLACK);
+        JButton editBtn = new StyleTheme.ModernButton("EDIT SELECTED", Color.ORANGE, Color.BLACK);
         editBtn.setBounds(680, 540, 150, 40);
 
-        JButton deleteBtn = new JButton("DELETE");
-        styleButton(deleteBtn, Color.RED, Color.WHITE);
+        JButton deleteBtn = new StyleTheme.ModernButton("DELETE", StyleTheme.ACCENT_RED, Color.WHITE);
         deleteBtn.setBounds(840, 540, 110, 40);
 
-        JButton logoutBtn = new JButton("LOGOUT");
-        styleButton(logoutBtn, Color.GRAY, Color.WHITE);
+        JButton logoutBtn = new StyleTheme.ModernButton("LOGOUT", Color.GRAY, Color.WHITE);
         logoutBtn.setBounds(30, 540, 120, 40);
 
-        // LOGIC 1: ADD (Buka Dialog Kosong)
-        addBtn.addActionListener(e -> {
-            new AddGameDialog(this).setVisible(true);
-        });
+        addBtn.addActionListener(e -> new AddGameDialog(this).setVisible(true));
 
-        // LOGIC 2: EDIT (Buka Dialog Terisi Data)
         editBtn.addActionListener(e -> {
             int row = table.getSelectedRow();
             if(row != -1) {
-                // Ambil data game dari list asli berdasarkan index baris
                 Game selectedGame = dataManager.getGames().get(row);
-                
-                // Buka Dialog dengan membawa data game tersebut
                 new AddGameDialog(this, selectedGame).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Pilih game di tabel dulu!");
             }
         });
 
-        // LOGIC 3: DELETE
         deleteBtn.addActionListener(e -> {
             int row = table.getSelectedRow();
             if(row != -1) {
@@ -209,16 +200,12 @@ public class MainFrame extends JFrame {
                     dataManager.deleteGame(new Game.Builder().setId(id).build());
                     refreshTable();
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Pilih game yang mau dihapus!");
-            }
+            } else JOptionPane.showMessageDialog(this, "Pilih game yang mau dihapus!");
         });
 
-        // LOGIC 4: Double Click Tabel untuk Edit (Fitur Bonus UX)
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (evt.getClickCount() == 2) { // Kalau didouble click
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                if (evt.getClickCount() == 2) { 
                     int row = table.getSelectedRow();
                     if(row != -1) {
                         Game selectedGame = dataManager.getGames().get(row);
@@ -249,93 +236,82 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // --- USER PANEL UTAMA (DENGAN 3 TAB) ---
     private JPanel createUserPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(BG_DARK);
+        panel.setBackground(StyleTheme.BG_DARK);
 
         RegularUser user = (RegularUser) dataManager.getCurrentUser();
 
-        // HEADER
+        // HEADER (Tetap sama, sudah oke)
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(BG_DARK);
+        header.setBackground(StyleTheme.BG_DARK);
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
 
         JLabel title = new JLabel("MINI STEAM");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
-        title.setForeground(ACCENT_BLUE);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setForeground(StyleTheme.ACCENT_BLUE);
 
         JPanel rightHeader = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
-        rightHeader.setBackground(BG_DARK);
+        rightHeader.setBackground(StyleTheme.BG_DARK);
 
         JLabel balLabel = new JLabel("WALLET: Rp " + String.format("%,.0f", user.getBalance()));
-        balLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        balLabel.setForeground(ACCENT_GREEN);
+        balLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        balLabel.setForeground(StyleTheme.ACCENT_GREEN);
 
-        JButton topUpBtn = new JButton("+ TOP UP");
-        styleButton(topUpBtn, ACCENT_BLUE, Color.BLACK);
-        topUpBtn.setFont(new Font("SansSerif", Font.BOLD, 11));
+        JButton topUpBtn = new StyleTheme.ModernButton("+ TOP UP", StyleTheme.ACCENT_BLUE, Color.BLACK);
         topUpBtn.setPreferredSize(new Dimension(90, 30));
+        topUpBtn.setFont(new Font("Segoe UI", Font.BOLD, 11));
 
         rightHeader.add(balLabel);
         rightHeader.add(topUpBtn);
         header.add(title, BorderLayout.WEST);
         header.add(rightHeader, BorderLayout.EAST);
 
-        // LOGIC TOP UP
         topUpBtn.addActionListener(e -> {
+           // ... (Logic Top Up tetap sama) ...
             String input = JOptionPane.showInputDialog(this, "Masukkan Jumlah Top Up (Rp):");
             if (input != null && !input.isEmpty()) {
                 try {
                     double amount = Double.parseDouble(input);
                     if (amount <= 0) throw new InputTidakValidException("Jumlah Top Up harus lebih dari 0!");
-                    
                     user.setBalance(user.getBalance() + amount);
                     dataManager.updateUserBalance(user);
-                    
                     balLabel.setText("WALLET: Rp " + String.format("%,.0f", user.getBalance()));
                     JOptionPane.showMessageDialog(this, "Top Up Berhasil!");
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Input harus angka!", "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (InputTidakValidException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.WARNING_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Gagal: " + ex.getMessage());
                 }
             }
         });
 
-        // --- TABS (STORE, LIBRARY, WISHLIST) ---
+        // TABS (Update Font Disini)
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setBackground(BG_DARKER);
-        tabbedPane.setForeground(TEXT_WHITE);
+
+        StyleTheme.styleTabbedPane(tabbedPane);
         
-        // Tab 1: Store
         JPanel storePanel = createStoreTab(user, balLabel);
-        tabbedPane.addTab("STORE", storePanel);
+        tabbedPane.addTab(" STORE ", storePanel); 
         
-        // Tab 2: Library
         JPanel libraryPanel = createLibraryTab(user);
-        tabbedPane.addTab("MY LIBRARY", libraryPanel);
+        tabbedPane.addTab(" MY LIBRARY ", libraryPanel);
 
-        // Tab 3: Wishlist (BARU)
         JPanel wishlistPanel = createWishlistTab(user);
-        tabbedPane.addTab("WISHLIST", wishlistPanel);
+        tabbedPane.addTab(" WISHLIST ", wishlistPanel);
 
-        // Footer Logout
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        footer.setBackground(BG_DARK);
-        JButton logoutBtn = new JButton("LOGOUT");
-        styleButton(logoutBtn, Color.RED, Color.WHITE);
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10)); // Tambah padding footer
+        footer.setBackground(StyleTheme.BG_DARK);
+        JButton logoutBtn = new StyleTheme.ModernButton("LOGOUT", StyleTheme.ACCENT_RED, Color.WHITE);
+        logoutBtn.setPreferredSize(new Dimension(100, 35));
         logoutBtn.addActionListener(e -> {
             dataManager.logout();
             cardLayout.show(mainPanel, "LOGIN");
         });
         footer.add(logoutBtn);
 
-        // Event Listener Refresh Tab
         tabbedPane.addChangeListener(e -> {
             int idx = tabbedPane.getSelectedIndex();
             if (idx == 1) refreshLibraryTab(libraryPanel, user);
-            if (idx == 2) refreshWishlistTab(wishlistPanel, user); // Refresh Wishlist
+            if (idx == 2) refreshWishlistTab(wishlistPanel, user);
         });
 
         panel.add(header, BorderLayout.NORTH);
@@ -345,220 +321,189 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-    // --- TAB 1: STORE (Update: Tambah Tombol Wishlist) ---
-    private JPanel createStoreTab(RegularUser user, JLabel balLabel) {
+   private JPanel createStoreTab(RegularUser user, JLabel balLabel) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(BG_DARK);
+        panel.setBackground(StyleTheme.BG_DARK);
         
         DefaultListModel<Game> listModel = new DefaultListModel<>();
         for(Game g : dataManager.getGames()) listModel.addElement(g);
         
         JList<Game> list = new JList<>(listModel);
-        list.setBackground(BG_DARKER);
-        list.setForeground(TEXT_WHITE);
+        list.setBackground(StyleTheme.BG_PANEL);
+        list.setForeground(StyleTheme.TEXT_MAIN);
         list.setCellRenderer(createGameRenderer());
+        JScrollPane scroll = new JScrollPane(list);
+        scroll.setBorder(BorderFactory.createEmptyBorder()); // Hapus border scroll
         
-        // Panel Tombol di Bawah
-        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 10, 0));
-        btnPanel.setBackground(BG_DARK);
-        btnPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-
-        JButton buyBtn = new JButton("BUY GAME");
-        styleButton(buyBtn, ACCENT_GREEN, Color.WHITE);
-
-        JButton wishBtn = new JButton("ADD TO WISHLIST");
-        styleButton(wishBtn, Color.ORANGE, Color.BLACK);
+        // --- PANEL TOMBOL LEBIH MODERN ---
+        // Gunakan FlowLayout CENTER dengan gap horizontal 20, vertikal 15
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        btnPanel.setBackground(StyleTheme.BG_PANEL); // Warna background sedikit lebih terang
         
-        // LOGIC BELI
+        JButton buyBtn = new StyleTheme.ModernButton("BUY GAME", StyleTheme.ACCENT_GREEN, Color.WHITE);
+        buyBtn.setPreferredSize(new Dimension(140, 40)); // Ukuran tombol konsisten
+        
+        JButton wishBtn = new StyleTheme.ModernButton("ADD TO WISHLIST", Color.ORANGE, Color.BLACK);
+        wishBtn.setPreferredSize(new Dimension(160, 40));
+
+        // ... (Logic buyBtn dan wishBtn TETAP SAMA seperti sebelumnya) ...
         buyBtn.addActionListener(e -> {
             Game g = list.getSelectedValue();
             if(g != null) {
                 try {
-                    if (dataManager.isGameOwned(user.getId(), g.getId())) {
-                        throw new GameSudahDimilikiException(g.getTitle());
-                    }
+                    if (dataManager.isGameOwned(user.getId(), g.getId())) throw new GameSudahDimilikiException(g.getTitle());
                     g.purchase(user.getBalance()); 
                     user.setBalance(user.getBalance() - g.getPrice());
                     dataManager.updateUserBalance(user);
                     dataManager.addToLibrary(user.getId(), g.getId());
                     balLabel.setText("WALLET: Rp " + String.format("%,.0f", user.getBalance()));
                     JOptionPane.showMessageDialog(this, "Success! Added to Library.");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Info", JOptionPane.WARNING_MESSAGE);
-                }
+                } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
             } else JOptionPane.showMessageDialog(this, "Pilih game dulu!");
         });
 
-        // LOGIC WISHLIST
         wishBtn.addActionListener(e -> {
             Game g = list.getSelectedValue();
             if (g != null) {
                 try {
-                    // Cek 1: Apakah sudah punya di Library?
-                    if (dataManager.isGameOwned(user.getId(), g.getId())) {
-                        throw new GameSudahDimilikiException(g.getTitle()); // Eror: Sudah punya
-                    }
-                    // Cek 2: Apakah sudah ada di Wishlist?
-                    if (dataManager.isGameInWishlist(user.getId(), g.getId())) {
-                        throw new GameSudahDiWishlistException(g.getTitle()); // Eror: Sudah di wishlist
-                    }
-                    
-                    // Add to DB
+                    if (dataManager.isGameOwned(user.getId(), g.getId())) throw new GameSudahDimilikiException(g.getTitle());
+                    if (dataManager.isGameInWishlist(user.getId(), g.getId())) throw new GameSudahDiWishlistException(g.getTitle());
                     dataManager.addToWishlist(user.getId(), g.getId());
                     JOptionPane.showMessageDialog(this, "Game ditambahkan ke Wishlist!");
-                
-                } catch (GameSudahDimilikiException ex) {
-                    JOptionPane.showMessageDialog(this, "Gagal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (GameSudahDiWishlistException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Info", JOptionPane.INFORMATION_MESSAGE);
-                }
+                } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
             } else JOptionPane.showMessageDialog(this, "Pilih game dulu!");
         });
 
         btnPanel.add(buyBtn);
         btnPanel.add(wishBtn);
 
-        panel.add(new JScrollPane(list), BorderLayout.CENTER);
+        panel.add(scroll, BorderLayout.CENTER);
         panel.add(btnPanel, BorderLayout.SOUTH);
         return panel;
     }
 
-    // --- TAB 3: WISHLIST (BARU) ---
     private JPanel createWishlistTab(RegularUser user) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(BG_DARK);
+        panel.setBackground(StyleTheme.BG_DARK);
         return panel; 
     }
 
     private void refreshWishlistTab(JPanel panel, RegularUser user) {
         panel.removeAll();
-        
+        panel.setLayout(new BorderLayout());
+        panel.setBackground(StyleTheme.BG_DARK);
+
         DefaultListModel<Game> wishModel = new DefaultListModel<>();
-        for(Game g : dataManager.getUserWishlist(user.getId())) {
-            wishModel.addElement(g);
-        }
+        for(Game g : dataManager.getUserWishlist(user.getId())) wishModel.addElement(g);
         
-        JList<Game> list = new JList<>(wishModel);
-        list.setBackground(BG_DARKER);
-        list.setForeground(TEXT_WHITE);
-        list.setCellRenderer(createGameRenderer());
-        
-        // Panel Tombol di Bawah (Grid 1 Baris, 2 Kolom)
-        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 10, 0));
-        btnPanel.setBackground(BG_DARK);
-        btnPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+        // --- CEK EMPTY STATE ---
+        if (wishModel.isEmpty()) {
+            JLabel emptyLbl = new JLabel("Wishlist kamu masih kosong.", SwingConstants.CENTER);
+            emptyLbl.setForeground(Color.GRAY);
+            emptyLbl.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+            panel.add(emptyLbl, BorderLayout.CENTER);
+        } else {
+            JList<Game> list = new JList<>(wishModel);
+            list.setBackground(StyleTheme.BG_PANEL);
+            list.setForeground(StyleTheme.TEXT_MAIN);
+            list.setCellRenderer(createGameRenderer());
+            JScrollPane scroll = new JScrollPane(list);
+            scroll.setBorder(BorderFactory.createEmptyBorder());
+            
+            // Panel Tombol Rata Tengah
+            JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+            btnPanel.setBackground(StyleTheme.BG_PANEL);
 
-        JButton buyBtn = new JButton("BUY NOW");
-        styleButton(buyBtn, ACCENT_GREEN, Color.WHITE);
+            JButton buyBtn = new StyleTheme.ModernButton("BUY NOW", StyleTheme.ACCENT_GREEN, Color.WHITE);
+            buyBtn.setPreferredSize(new Dimension(130, 40));
 
-        JButton removeBtn = new JButton("REMOVE");
-        styleButton(removeBtn, Color.RED, Color.WHITE);
-        
-        // --- LOGIC BELI DARI WISHLIST ---
-        buyBtn.addActionListener(e -> {
-            Game g = list.getSelectedValue();
-            if(g != null) {
-                try {
-                    // 1. Cek apakah anehnya user sudah punya (Validasi ganda)
-                    if (dataManager.isGameOwned(user.getId(), g.getId())) {
-                        // Kalau sudah punya, hapus saja dari wishlist
+            JButton removeBtn = new StyleTheme.ModernButton("REMOVE", StyleTheme.ACCENT_RED, Color.WHITE);
+            removeBtn.setPreferredSize(new Dimension(130, 40));
+            
+            // ... (Logic buyBtn dan removeBtn TETAP SAMA) ...
+            buyBtn.addActionListener(e -> {
+                Game g = list.getSelectedValue();
+                if(g != null) {
+                    try {
+                        if (dataManager.isGameOwned(user.getId(), g.getId())) {
+                            dataManager.removeFromWishlist(user.getId(), g.getId());
+                            refreshWishlistTab(panel, user);
+                            throw new GameSudahDimilikiException(g.getTitle());
+                        }
+                        g.purchase(user.getBalance()); 
+                        user.setBalance(user.getBalance() - g.getPrice());
+                        dataManager.updateUserBalance(user);       
+                        dataManager.addToLibrary(user.getId(), g.getId()); 
                         dataManager.removeFromWishlist(user.getId(), g.getId());
-                        refreshWishlistTab(panel, user);
-                        throw new GameSudahDimilikiException(g.getTitle());
-                    }
-
-                    // 2. Cek Saldo & Purchase (Exception SaldoKurang)
-                    g.purchase(user.getBalance()); 
-                    
-                    // 3. Proses Transaksi
-                    user.setBalance(user.getBalance() - g.getPrice());
-                    dataManager.updateUserBalance(user);       // Update Saldo DB
-                    dataManager.addToLibrary(user.getId(), g.getId()); // Masuk Library DB
-                    
-                    // 4. HAPUS DARI WISHLIST (Penting!)
+                        JOptionPane.showMessageDialog(this, "Berhasil membeli " + g.getTitle() + "!");
+                        refreshWishlistTab(panel, user); 
+                    } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
+                } else JOptionPane.showMessageDialog(this, "Pilih game dulu!");
+            });
+            removeBtn.addActionListener(e -> {
+                Game g = list.getSelectedValue();
+                if(g != null && JOptionPane.showConfirmDialog(this, "Hapus " + g.getTitle() + "?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     dataManager.removeFromWishlist(user.getId(), g.getId());
-                    
-                    // 5. Update UI
-                    JOptionPane.showMessageDialog(this, "Berhasil membeli " + g.getTitle() + "!");
-                    refreshWishlistTab(panel, user); // Refresh agar game hilang dari list
+                    refreshWishlistTab(panel, user);
+                } else if (g == null) JOptionPane.showMessageDialog(this, "Pilih game dulu!");
+            });
 
-                } catch (GameSudahDimilikiException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Info", JOptionPane.INFORMATION_MESSAGE);
-                } catch (SaldoKurangException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal Beli", JOptionPane.ERROR_MESSAGE);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Pilih game yang mau dibeli!");
-            }
-        });
-
-        // --- LOGIC HAPUS DARI WISHLIST ---
-        removeBtn.addActionListener(e -> {
-            Game g = list.getSelectedValue();
-            if(g != null) {
-                int confirm = JOptionPane.showConfirmDialog(this, "Hapus " + g.getTitle() + " dari Wishlist?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-                if(confirm == JOptionPane.YES_OPTION) {
-                    dataManager.removeFromWishlist(user.getId(), g.getId());
-                    refreshWishlistTab(panel, user); // Refresh otomatis
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Pilih game dulu!");
-            }
-        });
-
-        btnPanel.add(buyBtn);
-        btnPanel.add(removeBtn);
-
-        panel.add(new JScrollPane(list), BorderLayout.CENTER);
-        panel.add(btnPanel, BorderLayout.SOUTH);
-        
-        panel.revalidate();
+            btnPanel.add(buyBtn);
+            btnPanel.add(removeBtn);
+            panel.add(scroll, BorderLayout.CENTER);
+            panel.add(btnPanel, BorderLayout.SOUTH);
+        }
+        panel.revalidate(); 
         panel.repaint();
     }
 
-    // --- TAB 2: LIBRARY (LOGIC BARU) ---
-    private JPanel createLibraryTab(RegularUser user) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(BG_DARK);
-        return panel; // Kosong dulu, nanti diisi refreshLibraryTab
-    }
+    private JPanel createLibraryTab(RegularUser user) { return new JPanel(); } // Placeholder
 
-    // Method untuk refresh isi Library
     private void refreshLibraryTab(JPanel panel, RegularUser user) {
-        panel.removeAll(); // Hapus tampilan lama
+        panel.removeAll(); 
+        panel.setLayout(new BorderLayout());
+        panel.setBackground(StyleTheme.BG_DARK);
         
         DefaultListModel<Game> libModel = new DefaultListModel<>();
-        // Ambil game yang dimiliki user dari database
-        for(Game g : dataManager.getUserLibrary(user.getId())) {
-            libModel.addElement(g);
-        }
+        for(Game g : dataManager.getUserLibrary(user.getId())) libModel.addElement(g);
         
-        JList<Game> list = new JList<>(libModel);
-        list.setBackground(BG_DARKER);
-        list.setForeground(TEXT_WHITE);
-        list.setCellRenderer(createGameRenderer()); // Pakai renderer yang sama
-        
-        JButton playBtn = new JButton("PLAY GAME");
-        styleButton(playBtn, ACCENT_BLUE, Color.BLACK);
-        
-        playBtn.addActionListener(e -> {
-            Game g = list.getSelectedValue();
-            if(g != null) {
-                g.launch(); // Panggil method launch() -> Interface OOP
-                JOptionPane.showMessageDialog(this, "Launching " + g.getTitle() + "...\nHave Fun!");
-            }
-        });
+        // --- CEK EMPTY STATE ---
+        if (libModel.isEmpty()) {
+            JLabel emptyLbl = new JLabel("Belum ada game di Library. Yuk beli di Store!", SwingConstants.CENTER);
+            emptyLbl.setForeground(Color.GRAY);
+            emptyLbl.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+            panel.add(emptyLbl, BorderLayout.CENTER);
+        } else {
+            // Jika ada isinya, tampilkan list dan tombol Play
+            JList<Game> list = new JList<>(libModel);
+            list.setBackground(StyleTheme.BG_PANEL);
+            list.setForeground(StyleTheme.TEXT_MAIN);
+            list.setCellRenderer(createGameRenderer());
+            JScrollPane scroll = new JScrollPane(list);
+            scroll.setBorder(BorderFactory.createEmptyBorder());
 
-        panel.add(new JScrollPane(list), BorderLayout.CENTER);
-        panel.add(playBtn, BorderLayout.SOUTH);
-        
-        panel.revalidate();
+            // Panel Tombol Play Rata Tengah
+            JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 15));
+            btnPanel.setBackground(StyleTheme.BG_PANEL);
+
+            JButton playBtn = new StyleTheme.ModernButton("PLAY GAME", StyleTheme.ACCENT_BLUE, Color.BLACK);
+            playBtn.setPreferredSize(new Dimension(180, 45)); // Tombol Play lebih besar
+            playBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            
+            playBtn.addActionListener(e -> {
+                Game g = list.getSelectedValue();
+                if(g != null) JOptionPane.showMessageDialog(this, "Launching " + g.getTitle() + "...\nHave Fun!");
+                else JOptionPane.showMessageDialog(this, "Pilih game yang mau dimainkan!");
+            });
+
+            btnPanel.add(playBtn);
+            panel.add(scroll, BorderLayout.CENTER);
+            panel.add(btnPanel, BorderLayout.SOUTH);
+        }
+        panel.revalidate(); 
         panel.repaint();
     }
 
-    // RENDERER GAMBAR (Dipakai ulang)
     private ListCellRenderer<Object> createGameRenderer() {
         return new DefaultListCellRenderer() {
             @Override
@@ -576,31 +521,15 @@ public class MainFrame extends JFrame {
                     }
                 } catch (Exception e) {}
                 label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                if (isSelected) {
+                    label.setBackground(StyleTheme.ACCENT_BLUE);
+                    label.setForeground(Color.BLACK);
+                } else {
+                    label.setBackground(StyleTheme.BG_PANEL);
+                    label.setForeground(StyleTheme.TEXT_MAIN);
+                }
                 return label;
             }
         };
-    }
-
-    private void styleField(JTextField f) {
-        f.setBackground(Color.decode("#32353C"));
-        f.setForeground(TEXT_WHITE);
-        f.setCaretColor(TEXT_WHITE);
-        f.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-    }
-
-    private void styleButton(JButton b, Color bg, Color fg) {
-        b.setBackground(bg);
-        b.setForeground(fg);
-        b.setFocusPainted(false);
-        b.setFont(new Font("SansSerif", Font.BOLD, 12));
-    }
-
-    private void styleTable(JTable t) {
-        t.setBackground(BG_DARKER);
-        t.setForeground(TEXT_WHITE);
-        t.setGridColor(Color.GRAY);
-        t.setRowHeight(30);
-        t.getTableHeader().setBackground(BG_DARK);
-        t.getTableHeader().setForeground(TEXT_WHITE);
     }
 }

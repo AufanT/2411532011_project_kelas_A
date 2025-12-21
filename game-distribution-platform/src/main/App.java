@@ -1,6 +1,6 @@
 package main;
 
-import main.view.MainFrame;
+import main.ui.MainFrame;
 
 public class App {
     public static void main(String[] args) {

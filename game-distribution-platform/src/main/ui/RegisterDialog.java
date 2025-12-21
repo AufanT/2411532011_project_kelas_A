@@ -1,9 +1,9 @@
-package main.view;
+package main.ui;
 
 import java.awt.*;
 import javax.swing.*; 
 import main.error.RegisterFailedException;
-import main.utils.DataManager;
+import main.service.AppService;
 import main.utils.StyleTheme;
 
 public class RegisterDialog extends JDialog {
@@ -49,7 +49,7 @@ public class RegisterDialog extends JDialog {
             String c = new String(confirmTxt.getPassword());
 
             try {
-                DataManager.getInstance().registerUser(u, p, c);
+                AppService.getInstance().registerUser(u, p, c);
                 JOptionPane.showMessageDialog(this, "Registrasi Berhasil! Silakan Login.");
                 dispose();
             } catch (RegisterFailedException ex) {

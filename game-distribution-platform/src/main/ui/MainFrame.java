@@ -1,4 +1,4 @@
-package main.view;
+package main.ui;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -8,16 +8,16 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import main.error.*;
 import main.model.*;
-import main.utils.DataManager;
+import main.service.AppService;
 import main.utils.StyleTheme; 
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private DataManager dataManager;
+    private AppService appService;
 
     public MainFrame() {
-        dataManager = DataManager.getInstance();
+        appService = AppService.getInstance();
         initUI();
     }
 
@@ -113,8 +113,8 @@ public class MainFrame extends JFrame {
 
                 if (u.isEmpty() || p.isEmpty()) throw new InputTidakValidException("Username dan Password harus diisi!");
 
-                if (dataManager.login(u, p)) {
-                    if (dataManager.getCurrentUser().getRole().equals("ADMIN")) {
+                if (appService.login(u, p)) {
+                    if (appService.getCurrentUser().getRole().equals("ADMIN")) {
                         mainPanel.add(createAdminPanel(), "ADMIN");
                         cardLayout.show(mainPanel, "ADMIN");
                     } else {
@@ -180,7 +180,7 @@ public class MainFrame extends JFrame {
         editBtn.addActionListener(e -> {
             int row = table.getSelectedRow();
             if(row != -1) {
-                Game selectedGame = dataManager.getGames().get(row);
+                Game selectedGame = appService.getGames().get(row);
                 new AddGameDialog(this, selectedGame).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Pilih game di tabel dulu!");
@@ -192,7 +192,7 @@ public class MainFrame extends JFrame {
             if(row != -1) {
                 if(JOptionPane.showConfirmDialog(this, "Hapus game ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     String id = tableModel.getValueAt(row, 0).toString();
-                    dataManager.deleteGame(new Game.Builder().setId(id).build());
+                    appService.deleteGame(new Game.Builder().setId(id).build());
                     refreshTable();
                 }
             } else JOptionPane.showMessageDialog(this, "Pilih game yang mau dihapus!");
@@ -203,7 +203,7 @@ public class MainFrame extends JFrame {
                 if (evt.getClickCount() == 2) { 
                     int row = table.getSelectedRow();
                     if(row != -1) {
-                        Game selectedGame = dataManager.getGames().get(row);
+                        Game selectedGame = appService.getGames().get(row);
                         new AddGameDialog(MainFrame.this, selectedGame).setVisible(true);
                     }
                 }
@@ -211,7 +211,7 @@ public class MainFrame extends JFrame {
         });
 
         logoutBtn.addActionListener(e -> {
-            dataManager.logout();
+            appService.logout();
             cardLayout.show(mainPanel, "LOGIN");
         });
 
@@ -225,7 +225,7 @@ public class MainFrame extends JFrame {
     public void refreshTable() {
         if(tableModel != null) {
             tableModel.setRowCount(0);
-            for(Game g : dataManager.getGames()){
+            for(Game g : appService.getGames()){
                 tableModel.addRow(new Object[]{g.getId(), g.getTitle(), g.getGenre(), g.getPrice()});
             }
         }
@@ -235,7 +235,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(StyleTheme.BG_DARK);
 
-        RegularUser user = (RegularUser) dataManager.getCurrentUser();
+        RegularUser user = (RegularUser) appService.getCurrentUser();
 
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(StyleTheme.BG_DARK);
@@ -268,7 +268,7 @@ public class MainFrame extends JFrame {
                     double amount = Double.parseDouble(input);
                     if (amount <= 0) throw new InputTidakValidException("Jumlah Top Up harus lebih dari 0!");
                     user.setBalance(user.getBalance() + amount);
-                    dataManager.updateUserBalance(user);
+                    appService.updateUserBalance(user);
                     balLabel.setText("WALLET: Rp " + String.format("%,.0f", user.getBalance()));
                     JOptionPane.showMessageDialog(this, "Top Up Berhasil!");
                 } catch (Exception ex) {
@@ -295,7 +295,7 @@ public class MainFrame extends JFrame {
         JButton logoutBtn = new StyleTheme.ModernButton("LOGOUT", StyleTheme.ACCENT_RED, Color.WHITE);
         logoutBtn.setPreferredSize(new Dimension(100, 35));
         logoutBtn.addActionListener(e -> {
-            dataManager.logout();
+            appService.logout();
             cardLayout.show(mainPanel, "LOGIN");
         });
         footer.add(logoutBtn);
@@ -318,7 +318,7 @@ public class MainFrame extends JFrame {
         panel.setBackground(StyleTheme.BG_DARK);
         
         DefaultListModel<Game> listModel = new DefaultListModel<>();
-        for(Game g : dataManager.getGames()) listModel.addElement(g);
+        for(Game g : appService.getGames()) listModel.addElement(g);
         
         JList<Game> list = new JList<>(listModel);
         list.setBackground(StyleTheme.BG_PANEL);
@@ -340,11 +340,11 @@ public class MainFrame extends JFrame {
             Game g = list.getSelectedValue();
             if(g != null) {
                 try {
-                    if (dataManager.isGameOwned(user.getId(), g.getId())) throw new GameSudahDimilikiException(g.getTitle());
+                    if (appService.isGameOwned(user.getId(), g.getId())) throw new GameSudahDimilikiException(g.getTitle());
                     g.purchase(user.getBalance()); 
                     user.setBalance(user.getBalance() - g.getPrice());
-                    dataManager.updateUserBalance(user);
-                    dataManager.addToLibrary(user.getId(), g.getId());
+                    appService.updateUserBalance(user);
+                    appService.addToLibrary(user.getId(), g.getId());
                     balLabel.setText("WALLET: Rp " + String.format("%,.0f", user.getBalance()));
                     JOptionPane.showMessageDialog(this, "Success! Added to Library.");
                 } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
@@ -355,9 +355,9 @@ public class MainFrame extends JFrame {
             Game g = list.getSelectedValue();
             if (g != null) {
                 try {
-                    if (dataManager.isGameOwned(user.getId(), g.getId())) throw new GameSudahDimilikiException(g.getTitle());
-                    if (dataManager.isGameInWishlist(user.getId(), g.getId())) throw new GameSudahDiWishlistException(g.getTitle());
-                    dataManager.addToWishlist(user.getId(), g.getId());
+                    if (appService.isGameOwned(user.getId(), g.getId())) throw new GameSudahDimilikiException(g.getTitle());
+                    if (appService.isGameInWishlist(user.getId(), g.getId())) throw new GameSudahDiWishlistException(g.getTitle());
+                    appService.addToWishlist(user.getId(), g.getId());
                     JOptionPane.showMessageDialog(this, "Game ditambahkan ke Wishlist!");
                 } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
             } else JOptionPane.showMessageDialog(this, "Pilih game dulu!");
@@ -383,7 +383,7 @@ public class MainFrame extends JFrame {
         panel.setBackground(StyleTheme.BG_DARK);
 
         DefaultListModel<Game> wishModel = new DefaultListModel<>();
-        for(Game g : dataManager.getUserWishlist(user.getId())) wishModel.addElement(g);
+        for(Game g : appService.getUserWishlist(user.getId())) wishModel.addElement(g);
         
         if (wishModel.isEmpty()) {
             JLabel emptyLbl = new JLabel("Wishlist kamu masih kosong.", SwingConstants.CENTER);
@@ -411,16 +411,16 @@ public class MainFrame extends JFrame {
                 Game g = list.getSelectedValue();
                 if(g != null) {
                     try {
-                        if (dataManager.isGameOwned(user.getId(), g.getId())) {
-                            dataManager.removeFromWishlist(user.getId(), g.getId());
+                        if (appService.isGameOwned(user.getId(), g.getId())) {
+                            appService.removeFromWishlist(user.getId(), g.getId());
                             refreshWishlistTab(panel, user);
                             throw new GameSudahDimilikiException(g.getTitle());
                         }
                         g.purchase(user.getBalance()); 
                         user.setBalance(user.getBalance() - g.getPrice());
-                        dataManager.updateUserBalance(user);       
-                        dataManager.addToLibrary(user.getId(), g.getId()); 
-                        dataManager.removeFromWishlist(user.getId(), g.getId());
+                        appService.updateUserBalance(user);       
+                        appService.addToLibrary(user.getId(), g.getId()); 
+                        appService.removeFromWishlist(user.getId(), g.getId());
                         JOptionPane.showMessageDialog(this, "Berhasil membeli " + g.getTitle() + "!");
                         refreshWishlistTab(panel, user); 
                     } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
@@ -429,7 +429,7 @@ public class MainFrame extends JFrame {
             removeBtn.addActionListener(e -> {
                 Game g = list.getSelectedValue();
                 if(g != null && JOptionPane.showConfirmDialog(this, "Hapus " + g.getTitle() + "?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    dataManager.removeFromWishlist(user.getId(), g.getId());
+                    appService.removeFromWishlist(user.getId(), g.getId());
                     refreshWishlistTab(panel, user);
                 } else if (g == null) JOptionPane.showMessageDialog(this, "Pilih game dulu!");
             });
@@ -451,7 +451,7 @@ public class MainFrame extends JFrame {
         panel.setBackground(StyleTheme.BG_DARK);
         
         DefaultListModel<Game> libModel = new DefaultListModel<>();
-        for(Game g : dataManager.getUserLibrary(user.getId())) libModel.addElement(g);
+        for(Game g : appService.getUserLibrary(user.getId())) libModel.addElement(g);
         
         if (libModel.isEmpty()) {
             JLabel emptyLbl = new JLabel("Belum ada game di Library. Yuk beli di Store!", SwingConstants.CENTER);

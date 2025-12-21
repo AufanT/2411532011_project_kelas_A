@@ -1,11 +1,11 @@
-package main.view;
+package main.ui;
 
 import java.awt.*;
 import javax.swing.*;
 import main.error.GameSudahAdaException;
 import main.error.InputTidakValidException;
 import main.model.Game;
-import main.utils.DataManager;
+import main.service.AppService;
 import main.utils.StyleTheme;
 
 public class AddGameDialog extends JDialog {
@@ -84,12 +84,12 @@ public class AddGameDialog extends JDialog {
                 if (price < 0) throw new InputTidakValidException("Harga tidak boleh negatif!");
 
                 String inputTitle = titleTxt.getText().trim();
-                DataManager dataManager = DataManager.getInstance();
+                AppService appService = AppService.getInstance();
 
                 boolean isNewGame = (gameToEdit == null);
                 boolean titleChanged = (gameToEdit != null && !gameToEdit.getTitle().equalsIgnoreCase(inputTitle));
 
-                if ((isNewGame || titleChanged) && dataManager.isGameTitleExists(inputTitle)) {
+                if ((isNewGame || titleChanged) && appService.isGameTitleExists(inputTitle)) {
                     throw new GameSudahAdaException(inputTitle);
                 }
 
@@ -104,8 +104,8 @@ public class AddGameDialog extends JDialog {
                     .setImagePath(imgPath)
                     .build();
 
-                if (gameToEdit == null) dataManager.addGame(resultGame);
-                else dataManager.updateGame(resultGame);
+                if (gameToEdit == null) appService.addGame(resultGame);
+                else appService.updateGame(resultGame);
                 
                 JOptionPane.showMessageDialog(this, "Berhasil Disimpan!");
                 parent.refreshTable();
